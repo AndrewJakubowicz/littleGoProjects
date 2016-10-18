@@ -26,7 +26,7 @@ func main() {
 
 	// WAV spec
 	chunkId := []byte("RIFF")
-	chunkSize := [4]byte{104, 172, 0, 0} // 36 + subchunk size 2
+	chunkSize := [4]byte{0, 0, 172, 104} // 36 + subchunk size 2
 	format := []byte("WAVE")
 	subChunk1ID := []byte("fmt ") // Extra space so it takes up 4 bytes
 	subChunk1Size := [4]byte{16, 0, 0, 0}
