@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"os"
 )
 
 const sampleRateNumber = 44100
@@ -70,13 +71,14 @@ func main() {
 	}
 
 	// Out header
-	fmt.Print(buf)
+	os.Stdout.Write(buf.Bytes())
 
 	// Out data (melody)
+	databuf := new(bytes.Buffer)
 	for i := 0; i < sampleRateNumber; i++ {
-		fmt.Print(sawTooth(i))
+		binary.Write(databuf, binary.LittleEndian, sawTooth(i))
 	}
-
+	os.Stdout.Write(databuf.Bytes())
 }
 
 func sawTooth(x int) uint8 {
