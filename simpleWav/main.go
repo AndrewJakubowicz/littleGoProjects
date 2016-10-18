@@ -1,9 +1,4 @@
 // Package let's make music!
-// Usage below.
-// To get a wav file use:
-// go run main.go > out.wav
-// To see the score:
-// go run main.go | xxd -b
 // Thank you @jeffowler who wrote http://blog.jfo.click/how-rust-do/
 // Without that post I would have never tried this!
 package main
