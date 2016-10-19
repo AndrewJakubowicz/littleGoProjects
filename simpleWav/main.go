@@ -74,7 +74,7 @@ func main() {
 	// Out header
 	os.Stdout.Write(buf.Bytes())
 
-	// Out data (melody)
+	// Out data (a 1 second chord)
 	databuf := new(bytes.Buffer)
 	for i := 0; i < sampleRateNumber; i++ {
 		binary.Write(databuf, binary.LittleEndian, sinWave(i, 523.25)+sinWave(i, 440))
