@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"math"
 	"os"
 )
 
@@ -76,11 +77,15 @@ func main() {
 	// Out data (melody)
 	databuf := new(bytes.Buffer)
 	for i := 0; i < sampleRateNumber; i++ {
-		binary.Write(databuf, binary.LittleEndian, sawTooth(i))
+		binary.Write(databuf, binary.LittleEndian, sinWave(i, 523.25)+sinWave(i, 440))
 	}
 	os.Stdout.Write(databuf.Bytes())
 }
 
 func sawTooth(x int) uint8 {
 	return uint8(x + 1%255)
+}
+
+func sinWave(x int, f float64) uint8 {
+	return uint8(((math.Sin((float64(x)*2*math.Pi)/sampleRateNumber*f) + 1) / 2) * 255 * 1 / 2)
 }
