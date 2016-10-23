@@ -1,4 +1,3 @@
-// Exercise 3: Internet Cafe
 // Small internet cafe has 8 computers.
 // Computers available as a first come, first serve basis.
 // When all computers are taken, the next person waits till one is available.
@@ -15,35 +14,51 @@ import (
 	"time"
 )
 
-var wg sync.WaitGroup
-
+// Refactored by William Kennedy.
 func main() {
-	waitingList := make(chan int)
+
+	// How many people want in?
 	people := rand.Perm(25)
-	wg.Add(25)
-	// This is the line of people waiting to get on the computer.
-	go allocatePeople(people, waitingList)
 
-	// Initiate the 8 computers.
+	// Create the waiting list.
+	waitingList := make(chan int)
+
+	// Set the waitgroup for the number of people
+	// to wait on before ending the app.
+	var wg sync.WaitGroup
+	wg.Add(len(people))
+
+	// Add the 8 computers into the room.
 	for i := 0; i < 8; i++ {
-		go useComputer(waitingList)
-	}
-	wg.Wait()
-}
 
-func allocatePeople(people []int, c chan int) {
+		// One goroutine per computer.
+		go func() {
+
+			// Wait for people to request a computer.
+			for p := range waitingList {
+
+				// Calculate stats.
+				t := (rand.Int() % 105) + 15
+				fmt.Printf("Tourist %d is online\n", p)
+				time.Sleep(time.Duration(t*10) * time.Millisecond)
+				fmt.Printf("Tourist %d spent %d minutes online\n", p, t)
+
+				// Report the user is done with this computer.
+				wg.Done()
+			}
+		}()
+	}
+
+	// Start serving computers to people
 	for i := 0; i < len(people); i++ {
-		c <- people[i]
+		waitingList <- people[i]
 	}
-}
 
-func useComputer(c chan int) {
-	for {
-		person := <-c
-		t := (rand.Int() % 105) + 15
-		fmt.Printf("Tourist %d is online\n", person)
-		time.Sleep(time.Duration(t) * time.Millisecond)
-		fmt.Printf("Tourist %d spent %d minutes online\n", person, t)
-		wg.Done()
-	}
+	// All people have been served.
+	fmt.Println("Closing the waiting list")
+	close(waitingList)
+
+	// Wait for all of them to report they are
+	// done using the computer.
+	wg.Wait()
 }
