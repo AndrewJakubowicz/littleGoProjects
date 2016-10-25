@@ -35,7 +35,7 @@ func process(w http.ResponseWriter, r *http.Request) {
 // This function returns the form.
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	file, _ := ioutil.ReadFile("index.html")
-	fmt.Fprintf(w, string(file))
+	w.Write(file)
 }
 
 func main() {
