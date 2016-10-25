@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -50,6 +51,25 @@ func headerRedirect(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(301)
 }
 
+type post struct {
+	User    string
+	Threads []string
+}
+
+func serveJSON(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	p := &post{
+		User:    "Andrew J",
+		Threads: []string{"first", "second", "third"},
+	}
+	json, err := json.Marshal(p)
+	if err != nil {
+		http.Error(w, "Failed to marshal Post to JSON", 500)
+		return
+	}
+	w.Write(json)
+}
+
 func main() {
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
@@ -59,6 +79,7 @@ func main() {
 	http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/none", noSuchFunction)
 	http.HandleFunc("/escape", headerRedirect)
+	http.HandleFunc("/json", serveJSON)
 
 	fmt.Println("Starting server on [", server.Addr, "]")
 	server.ListenAndServe()
