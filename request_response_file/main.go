@@ -38,6 +38,18 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 	w.Write(file)
 }
 
+// Example of returning different status codes.
+func noSuchFunction(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(501)
+	fmt.Fprintln(w, "No such service...")
+}
+
+// Example of how headers can = redirect.
+func headerRedirect(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Location", "http://google.com")
+	w.WriteHeader(301)
+}
+
 func main() {
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
@@ -45,6 +57,8 @@ func main() {
 
 	http.HandleFunc("/process", process)
 	http.HandleFunc("/", serveIndex)
+	http.HandleFunc("/none", noSuchFunction)
+	http.HandleFunc("/escape", headerRedirect)
 
 	fmt.Println("Starting server on [", server.Addr, "]")
 	server.ListenAndServe()
