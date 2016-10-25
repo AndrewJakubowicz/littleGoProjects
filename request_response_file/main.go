@@ -8,8 +8,15 @@ import (
 
 // Process a multipart form.
 func process(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(1024)
-
+	err := r.ParseMultipartForm(1024)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	if len(r.MultipartForm.File["uploaded"]) < 1 {
+		http.Error(w, "Error: Please submit a file!", 400)
+		return
+	}
 	fileHeader := r.MultipartForm.File["uploaded"][0]
 	file, err := fileHeader.Open()
 	if err != nil {
