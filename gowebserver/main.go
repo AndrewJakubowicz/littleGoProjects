@@ -3,32 +3,28 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"reflect"
+	"runtime"
 )
 
-type helloHandler struct{}
-
-func (h *helloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
-	fmt.Fprintf(w, "Hello!")
+func hello(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "hello!")
 }
 
-type worldHandler struct{}
-
-func (h *worldHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
-	fmt.Fprintf(w, "World")
+func log(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		name := runtime.FuncForPC(reflect.ValueOf(h).Pointer()).Name()
+		fmt.Println("Handler function called - " + name)
+		h(w, r)
+	}
 }
 
 func main() {
-	hello := helloHandler{}
-	world := worldHandler{}
 	server := http.Server{
 		Addr:    "127.0.0.1:8080",
 		Handler: nil,
 	}
-
-	http.Handle("/hello", &hello)
-	http.Handle("/world", &world)
+	http.HandleFunc("/hello", log(hello))
 	// createCertAndKey()
 	// server.ListenAndServeTLS("cert.pem", "key.pem")
 	server.ListenAndServe()
