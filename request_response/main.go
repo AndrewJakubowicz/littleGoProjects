@@ -24,7 +24,7 @@ func reqBody(w http.ResponseWriter, r *http.Request) {
 	l := r.ContentLength
 	body := make([]byte, l)
 	r.Body.Read(body)
-	fmt.Fprintln(w, string(body))
+	w.Write(body)
 }
 
 // process the form.
@@ -43,7 +43,7 @@ func process(w http.ResponseWriter, r *http.Request) {
 // This function returns the form.
 func serveForm(w http.ResponseWriter, r *http.Request) {
 	file, _ := ioutil.ReadFile("minimalRequest.html")
-	fmt.Fprintf(w, string(file))
+	w.Write(file)
 }
 
 func main() {
