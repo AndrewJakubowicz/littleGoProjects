@@ -31,8 +31,13 @@ func reqBody(w http.ResponseWriter, r *http.Request) {
 func process(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	fmt.Fprintln(w, "Using r.ParseForm():\n============")
-	fmt.Fprintln(w, r.Form, "\n\nUse r.PostForm() to ignore URL key-value pairs.\n============\n", r.PostForm)
-	fmt.Fprintln(w, "\n\nr.Form[\"FirstName\"]\n============\n", r.Form["FirstName"])
+	fmt.Fprintln(w, r.Form,
+		"\n\nUse r.PostForm() to ignore URL key-value pairs.\n============\n",
+		r.PostForm)
+	fmt.Fprintln(w, "\n\nr.Form[\"FirstName\"]\n============\n",
+		r.Form["FirstName"])
+	fmt.Fprintln(w, "\n\nr.PostFormValue(\"FirstName\")\n============\n",
+		r.PostFormValue("FirstName"))
 }
 
 // This function returns the form.
@@ -45,6 +50,7 @@ func main() {
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
 	}
+
 	http.HandleFunc("/headers", headers)
 	http.HandleFunc("/encoding", encodingHeader)
 	http.HandleFunc("/reqBody", reqBody)
