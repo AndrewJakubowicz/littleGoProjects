@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -26,9 +27,18 @@ func reqBody(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, string(body))
 }
 
+// process the form.
 func process(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	fmt.Fprintln(w, r.Form)
+	fmt.Fprintln(w, "Using r.ParseForm():\n============")
+	fmt.Fprintln(w, r.Form, "\n\nUse r.PostForm() to ignore URL key-value pairs.\n============\n", r.PostForm)
+	fmt.Fprintln(w, "\n\nr.Form[\"FirstName\"]\n============\n", r.Form["FirstName"])
+}
+
+// This function returns the form.
+func serveForm(w http.ResponseWriter, r *http.Request) {
+	file, _ := ioutil.ReadFile("minimalRequest.html")
+	fmt.Fprintf(w, string(file))
 }
 
 func main() {
@@ -39,6 +49,7 @@ func main() {
 	http.HandleFunc("/encoding", encodingHeader)
 	http.HandleFunc("/reqBody", reqBody)
 	http.HandleFunc("/process", process)
+	http.HandleFunc("/", serveForm)
 
 	fmt.Println("Starting server on [", server.Addr, "]")
 	server.ListenAndServe()
