@@ -1,20 +1,34 @@
 package main
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
-type myHandler struct{}
+type helloHandler struct{}
 
-func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *helloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("This is an example server.\n"))
+	fmt.Fprintf(w, "Hello!")
+}
+
+type worldHandler struct{}
+
+func (h *worldHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	fmt.Fprintf(w, "World")
 }
 
 func main() {
-	handler := myHandler{}
+	hello := helloHandler{}
+	world := worldHandler{}
 	server := http.Server{
 		Addr:    "127.0.0.1:8080",
-		Handler: &handler,
+		Handler: nil,
 	}
+
+	http.Handle("/hello", &hello)
+	http.Handle("/world", &world)
 	// createCertAndKey()
 	// server.ListenAndServeTLS("cert.pem", "key.pem")
 	server.ListenAndServe()
